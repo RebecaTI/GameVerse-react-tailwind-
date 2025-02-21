@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 const mockGames = [
   { id: 1, title: 'Grand Theft Auto V', image: 'https://cdn2.steamgriddb.com/hero/838aac83e00e8c5ca0f839c96d6cb3be.png', genre: 'Action', platform: 'PC, PS, Xbox' },
   { id: 2, title: 'Minecraft', image: 'https://cdn2.steamgriddb.com/hero/47f4b6321e9fd8e8f7326a6adc1a7c1e.png', genre: 'Sandbox', platform: 'PC, Console, Mobile' },
@@ -24,14 +24,27 @@ const mockGames = [
 
 const mockGenres = ['All', 'RPG', 'Action', 'Adventure', 'Sandbox', 'Battle Royale', 'Platformer', 'Simulation', 'Shooter', 'MOBA'];
 
-useEffect(() => {
-  fetch('https://www.freetogame.com/api/games');
-}, [page])
-
 
 const GameList = () => {
   const [selectedGenre, setSelectedGenre] = useState('All');
   const filteredGames = selectedGenre === "All" ? mockGames : mockGames.filter(game => game.genre === selectedGenre);
+
+  const API_URL = 'https://ranekapi.origamid.dev/json/api/produto/';
+  const [APIData, setAPIData] = useState(null);
+
+  async function fetchGames() {
+    const response = await fetch(API_URL);
+    const json = await response.json();
+    setAPIData(json);
+  }
+
+  useEffect(() => {
+    fetchGames()
+  }, [fetchGames])
+
+  // useEffect(() => {
+  //   console.log(APID.ata)
+  // }, [APIData])
 
   return (
     <section>
