@@ -56,7 +56,7 @@ const GameList = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600">Search</button>
+          {/* <button className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600">Search</button> */}
         </div>
 
         <div className="flex gap-2 flex-wrap">
