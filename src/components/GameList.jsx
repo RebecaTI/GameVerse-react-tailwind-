@@ -1,56 +1,65 @@
 import React, { useState, useEffect } from 'react'
-const mockGames = [
-  { id: 1, title: 'Grand Theft Auto V', image: 'https://cdn2.steamgriddb.com/hero/838aac83e00e8c5ca0f839c96d6cb3be.png', genre: 'Action', platform: 'PC, PS, Xbox' },
-  { id: 2, title: 'Minecraft', image: 'https://cdn2.steamgriddb.com/hero/47f4b6321e9fd8e8f7326a6adc1a7c1e.png', genre: 'Sandbox', platform: 'PC, Console, Mobile' },
-  { id: 3, title: 'The Legend of Zelda: Breath of the Wild', image: 'https://cdn2.steamgriddb.com/hero/5860c8577fdd64d1720bc7358ca917b2.png', genre: 'Adventure', platform: 'Nintendo Switch' },
-  { id: 4, title: 'Red Dead Redemption 2', image: 'https://cdn2.steamgriddb.com/hero/4b23f8dc9eb4ed500a662e396908d39b.png', genre: 'Action', platform: 'PC, PS, Xbox' },
-  { id: 5, title: 'Dark Souls III', image: 'https://cdn2.steamgriddb.com/hero/2181d94fba9a1d2de2b5f6fb75f8ab08.png', genre: 'RPG', platform: 'PC, PS, Xbox' },
-  { id: 6, title: 'The Witcher 3', image: 'https://cdn2.steamgriddb.com/hero/87896a4f32e7a4842b220691cf6e51d7.jpg', genre: 'RPG', platform: 'PC' },
-  { id: 7, title: 'Cyberpunk 2077', image: 'https://cdn2.steamgriddb.com/hero/719c6c64efb8dbf088b2677dee1a2c2e.png', genre: 'RPG', platform: 'PC, PS, Xbox' },
-  { id: 8, title: 'Halo Infinite', image: 'https://cdn2.steamgriddb.com/hero/b87d091b59c00691ef8fdee0f0472b5b.jpg', genre: 'Shooter', platform: 'PC, Xbox' },
-  { id: 9, title: 'Call of Duty: Warzone', image: 'https://cdn2.steamgriddb.com/hero/0f79c3f3e971e1af245a3551b53a8737.png', genre: 'Battle Royale', platform: 'PC, Console' },
-  { id: 10, title: 'Fortnite', image: 'https://cdn2.steamgriddb.com/hero/fa2b52148f1bfe3621b50ca9e3b3e5e2.png', genre: 'Battle Royale', platform: 'PC, Console, Mobile' },
-  { id: 11, title: 'Super Mario Odyssey', image: 'https://cdn2.steamgriddb.com/hero/84e4ff1c1aef896401c3af7975a491b0.png', genre: 'Platformer', platform: 'Nintendo Switch' },
-  { id: 12, title: 'God of War', image: 'https://cdn2.steamgriddb.com/hero/6b9134c091f817b0ba60a4fff43ded26.png', genre: 'Action', platform: 'PC, PS' },
-  { id: 13, title: 'Elden Ring', image: 'https://cdn2.steamgriddb.com/hero/c73f4d8f3e0c84920eef1464c4c73cb8.jpg', genre: 'RPG', platform: 'PC, PS, Xbox' },
-  { id: 14, title: 'Horizon Zero Dawn', image: 'https://cdn2.steamgriddb.com/hero/16837163fee34175358a47e0b51485ff.jpg', genre: 'Action', platform: 'PC, PS' },
-  { id: 15, title: 'Animal Crossing: New Horizons', image: 'https://cdn2.steamgriddb.com/hero/2d75ebecba55c44db903cd7f5c59c5f7.png', genre: 'Simulation', platform: 'Nintendo Switch' },
-  { id: 16, title: 'Overwatch 2', image: 'https://cdn2.steamgriddb.com/hero/b0927d92e8529303dc32a4690413063b.jpg', genre: 'Shooter', platform: 'PC, Console' },
-  { id: 17, title: 'League of Legends', image: 'https://cdn2.steamgriddb.com/hero/1d4fec573363bb608caa3008337ea5cb.png', genre: 'MOBA', platform: 'PC' },
-  { id: 18, title: 'Dota 2', image: 'https://cdn2.steamgriddb.com/hero/35bd966ff9784b5ebbaba5e1fad13859.png', genre: 'MOBA', platform: 'PC' },
-  { id: 19, title: 'Counter-Strike 2', image: 'https://cdn2.steamgriddb.com/hero/d27be453d21aaa022062a24c5cf4111c.png', genre: 'Shooter', platform: 'PC' },
-  { id: 20, title: 'Starfield', image: 'https://cdn2.steamgriddb.com/hero/895bbadee80b41e98a5e78ecf1ece53d.jpg', genre: 'RPG', platform: 'PC, Xbox' }
-];
 
-const mockGenres = ['All', 'RPG', 'Action', 'Adventure', 'Sandbox', 'Battle Royale', 'Platformer', 'Simulation', 'Shooter', 'MOBA'];
+const mockGenres = ['All', 'MMORPG', 'Shooter', 'ARPG', 'Strategy', 'Battle Royale', 'MOBA', 'Card Game', 'Sports', 'Fighting'];
 
+const API_URL = 'https://free-to-play-games-database.p.rapidapi.com/api/games';
+const options = {
+  method: 'GET',
+  // mode: 'no-cors',
+  headers: {
+    'x-rapidapi-key': 'bce6372954mshdeeffb9f4babe5dp19189bjsn09561069db5f',
+    'x-rapidapi-host': 'free-to-play-games-database.p.rapidapi.com'
+  }
+};
 
 const GameList = () => {
+  const [APIData, setAPIData] = useState([]);
+  const [text, setText] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('All');
-  const filteredGames = selectedGenre === "All" ? mockGames : mockGames.filter(game => game.genre === selectedGenre);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const API_URL = 'https://ranekapi.origamid.dev/json/api/produto/';
-  const [APIData, setAPIData] = useState(null);
+  console.log(searchTerm);
 
-  async function fetchGames() {
-    const response = await fetch(API_URL);
-    const json = await response.json();
-    setAPIData(json);
+  // const filteredGames = selectedGenre === "All" ? APIData : APIData.filter(game => game.genre === selectedGenre);
+
+  const filteredGames = APIData
+    .filter(game => selectedGenre === 'All' || game.genre === selectedGenre)
+    .filter(game => game.title.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  const fetchGames = async () => {
+    try {
+      const response = await fetch(API_URL, options);
+      // console.log(response);
+      const json = await response.json();
+      setAPIData(json)
+    } catch (error) {
+      setErrorMessage('Error fetching games. Please try again later');
+      console.error(`Error fetching games: error ${error}`);
+    }
   }
 
   useEffect(() => {
     fetchGames()
-  }, [fetchGames])
-
-  // useEffect(() => {
-  //   console.log(APID.ata)
-  // }, [APIData])
+  }, [])
 
   return (
     <section>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">All Games</h2>
-        <div className="flex gap-2 flex-wrap w-2/3 justify-end">
+
+      <div>
+        <div className="flex items-center gap-4 mb-4">
+
+          <input
+            type="text"
+            placeholder="Search for games"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600">Search</button>
+        </div>
+
+        <div className="flex gap-2 flex-wrap">
           {mockGenres.map((genre) => (
             <button key={genre} onClick={() => setSelectedGenre(genre)} className={`px-3 py-1 rounded ${selectedGenre === genre ?
               "bg-indigo-700 " :
@@ -59,12 +68,25 @@ const GameList = () => {
           ))}
         </div>
       </div>
+      <div className="flex justify-between items-center my-4 ">
+        <h2 className="text-2xl font-semibold" onClick={() => {
+          setText(text + 1)
+          console.log(text)
+        }}>All Games - {filteredGames.length} </h2>
+
+      </div>
+      {/* {setAPIData.map((game) => {
+        <div>
+
+        </div>
+      })} */}
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredGames.map((game) => (
           <div key={game.id} className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="relative h-48">
-              <img src={game.image} alt={game.title} className="w-full h-full object-cover object-center" />
+              <img src={game.thumbnail} alt={game.title} className="w-full h-full object-cover object-center" />
             </div>
             <div className="p-4">
               <h3 className="text-lg font-semibold mb-1">{game.title}</h3>
