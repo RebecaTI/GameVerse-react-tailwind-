@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react'
 import Featured from './Featured'
 import GameList from './GameList'
 
